@@ -1,9 +1,0 @@
-matplotlib>=3.10.0
-numba>=0.67.0
-numpy>=2.0.2
-pandas>=2.2.3
-scikit-learn>=1.6.1
-torch>=2.0.0
-torch-timeseries>=0.2.5
-torchvision
-tslearn>=0.9.0
