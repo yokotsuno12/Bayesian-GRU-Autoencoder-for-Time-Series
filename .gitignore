@@ -1,5 +1,4 @@
-echo "__pycache__/" >> .gitignore
-echo "*.pyc" >> .gitignore
-echo ".DS_Store" >> .gitignore
-data/traffic/traffic.txt
-data/traffic
+__pycache__/
+*.pyc
+.DS_Store
+data/traffic/
