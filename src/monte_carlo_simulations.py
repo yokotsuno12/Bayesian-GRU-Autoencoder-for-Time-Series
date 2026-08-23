@@ -1,3 +1,10 @@
+import torch
+from torch import nn
+import torch.nn.functional as F
+import random
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+random.seed(0)
 
 def monte_carlo_dropout(model, loader, batch_size, N_output, s):
   # s sup ou egal à 1

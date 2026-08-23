@@ -1,6 +1,9 @@
 import torch
 from . import soft_dtw
 from . import path_soft_dtw
+from .soft_dtw import SoftDTWBatch, pairwise_distances
+from .path_soft_dtw import PathDTWBatch
+#prom tslearn.metrics import dtw, dtw_path
 
 def dilate_loss(outputs, targets, alpha, gamma, device):
     # outputs, targets: shape (batch_size, N_output, 1)

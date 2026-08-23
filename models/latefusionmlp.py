@@ -1,3 +1,6 @@
+import torch
+from torch import nn
+import torch.nn.functional as F
 
 class LateFusionMLP(torch.nn.Module):
     def __init__(self, one_output_size, num_variables, fc_units, mlp_dropout, num_grulstm_layers):

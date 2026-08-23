@@ -1,3 +1,16 @@
+import numpy as np
+import torch
+import random
+from models.bayesian_fusion import FusionBayesianEncoderRNN, FusionBayesianDecoderRNN, FusionBayesian_Net_GRU
+from tslearn.metrics import dtw, dtw_path
+from loss import soft_dtw, path_soft_dtw, dilate_loss
+from loss.dilate_loss import dilate_loss
+import matplotlib.pyplot as plt
+import warnings
+import warnings; warnings.simplefilter('ignore')
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 # parameters
 batch_size = 50
 N_input = 90

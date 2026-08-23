@@ -1,5 +1,10 @@
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
 
-def visualiser_avec_mcd_loaderformat(loader, out_of_mc, N_input, N_output, which_batch, which_data, variables, reduce_input_window = False) :
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+def visualiser_avec_mcd_loaderformat(loader, out_of_mc, N_input, N_output, which_batch, which_data, variables, title=None, save_path=None, reduce_input_window = False) :
   if reduce_input_window :
     index_x, index_y = torch.arange(N_input - N_output, N_input).to(device), torch.arange(N_input, N_output+N_input).to(device)
   else : 
@@ -36,3 +41,11 @@ def visualiser_avec_mcd_loaderformat(loader, out_of_mc, N_input, N_output, which
       #                        str(variables[w])+': Incertitude basse'])
   #plt.legend(legende)
     plt.legend(['Input', 'Target', 'Prediction', 'Confidence (95%)'])#haute', 'Incertitude basse'])
+    if title:
+      plt.title(title)
+    else:
+      plt.title('Monte Carlo Dropout Results')
+    if save_path is not None:
+      plt.savefig(save_path, dpi=300, bbox_inches="tight")
+      plt.close()
+      print(f"Graphique sauvegardé sous : {save_path}")

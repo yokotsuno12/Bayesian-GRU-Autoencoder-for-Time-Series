@@ -1,4 +1,8 @@
 ### SOFT DTW
+import numpy as np
+import torch
+from numba import jit
+from torch.autograd import Function
 
 def pairwise_distances(x, y=None):
     '''
