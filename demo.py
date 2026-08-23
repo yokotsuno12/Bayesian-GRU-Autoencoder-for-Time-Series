@@ -36,12 +36,12 @@ random.seed(0)
 
 #load data
 trafic = Traffic("./data")
-donnees_trafic = trafic.data[:-24*3,0:200].astype(np.float32) #découpage par tranches de 8 jours pendant deux ans, il fallait supprimer trois jours
+donnees_trafic = trafic.data[:-24*3,0:100].astype(np.float32) #découpage par tranches de 8 jours pendant deux ans, il fallait supprimer trois jours
 donnees_trafic_rangees = donnees_trafic.transpose().flatten()
 
 scaler_traffic, trafic_train, trafic_test, trafic_val = prepare_univariate_data(
                         series_data = donnees_trafic_rangees, nav = N_input, nap = N_output,
-                        train_size=5460*2, test_size = 1820*2, val_size = 1820*2,
+                        train_size=5460, test_size = 1820, val_size = 1820,
                         create_val_loader=True, batch_size=182, num_workers=4)
 
 encoder2 = FusionBayesianEncoderRNN(input_size=1, hidden_size=128, num_grulstm_layers=1, batch_size=182).to(device)
