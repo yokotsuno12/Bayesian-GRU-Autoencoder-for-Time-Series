@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import random
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-random.seed(0)
+#random.seed(0)
 
 def monte_carlo_dropout(model, loader, batch_size, N_output, s):
   # s sup ou egal à 1
@@ -13,9 +13,9 @@ def monte_carlo_dropout(model, loader, batch_size, N_output, s):
 
   outputs = torch.zeros(batch_number, batch_size, N_output, num_var, 2).to(device) # dernières dimensions: moyenne, écart-type
   if s>1 :
-    model.Training = True #enables dropout
+    model.training = True #enables dropout
   else :
-    model.Training = False #disables dropout
+    model.training = False #disables dropout
 
   met = 0
 

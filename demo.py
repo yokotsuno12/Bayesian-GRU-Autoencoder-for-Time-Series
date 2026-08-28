@@ -1,12 +1,7 @@
-#pip install tslearn
-#pip install -r requirements.txt
-#pip install torch-timeseries
-
 import os
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-#from torch.utils.data import DataLoader
 import random
 from tslearn.metrics import dtw, dtw_path
 import matplotlib.pyplot as plt
@@ -23,8 +18,9 @@ from loss import soft_dtw, path_soft_dtw, dilate_loss
 from loss.dilate_loss import dilate_loss
 from models.train import train_model2
 
-epochs_num_dil = 0
-epochs_num_mse = 0
+epochs_num_dil = 0 #Change it if you want to re-train the DLATE-trained model.
+epochs_num_mse = 0 #Idem for the MSE-trained model. Be careful, the training is quite long !
+seed_reproducibility = True #Set it to False if you want an (almost) unique result ! 
 N_input=168
 N_output=24
 batch_size = 182
@@ -32,7 +28,16 @@ num_var = 1
 gamma = 0.1
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-random.seed(0)
+if seed_reproducibility:
+    torch.use_deterministic_algorithms(True)
+    torch.backends.cudnn.benchmark = False
+    random.seed(0)
+    np.random.seed(0)
+    torch.manual_seed(0)
+else : # It's part of the magic ! 
+    random.seed() 
+    np.random.seed()
+    torch.seed()
 
 #load data
 trafic = Traffic("./data")
@@ -42,7 +47,7 @@ donnees_trafic_rangees = donnees_trafic.transpose().flatten()
 scaler_traffic, trafic_train, trafic_test, trafic_val = prepare_univariate_data(
                         series_data = donnees_trafic_rangees, nav = N_input, nap = N_output,
                         train_size=5460, test_size = 1820, val_size = 1820,
-                        create_val_loader=True, batch_size=182, num_workers=4)
+                        create_val_loader=True, batch_size=182, num_workers=4, seed_reproducibility=seed_reproducibility)
 
 encoder2 = FusionBayesianEncoderRNN(input_size=1, hidden_size=128, num_grulstm_layers=1, batch_size=182).to(device)
 decoder2 = FusionBayesianDecoderRNN(input_size=1, hidden_size=128, num_grulstm_layers=1,fc_units=16, output_size=1).to(device)

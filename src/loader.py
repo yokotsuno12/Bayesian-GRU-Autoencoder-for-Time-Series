@@ -55,7 +55,7 @@ def create_time_series_dataset(series, nav, nap, N):
 
     return X, y
 
-def prepare_univariate_data(series_data, nav, nap, train_size, test_size, batch_size, num_workers, create_val_loader=False, val_size=0, random_state=666, shuffle_split=True):
+def prepare_univariate_data(series_data, nav, nap, train_size, test_size, batch_size, num_workers, create_val_loader=False, val_size=0, random_state=666, shuffle_split=True, seed_reproducibility=True):
     """
     Preprocesses univariate time series data for training, testing, and optional validation.
 
@@ -99,6 +99,11 @@ def prepare_univariate_data(series_data, nav, nap, train_size, test_size, batch_
         random_state=random_state, shuffle=shuffle_split, stratify=None
     )
 
+    generator = torch.Generator()
+    if seed_reproducibility:
+        generator.manual_seed(0)
+    else:
+        generator.seed()
 
     if create_val_loader:
         # 4. Train/Validation Split
@@ -109,22 +114,22 @@ def prepare_univariate_data(series_data, nav, nap, train_size, test_size, batch_
 
         our_dataset_train = OurDataset(X_train, y_train)
         our_dataset_val = OurDataset(X_val, y_val)
-        train_loader = DataLoader(our_dataset_train, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
-        val_loader = DataLoader(our_dataset_val, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+        train_loader = DataLoader(our_dataset_train, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True, generator=generator)
+        val_loader = DataLoader(our_dataset_val, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True, generator=generator)
 
     else:
         our_dataset_train = OurDataset(X_train_full, y_train_full)
-        train_loader = DataLoader(our_dataset_train, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
+        train_loader = DataLoader(our_dataset_train, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True, generator=generator)
 
     our_dataset_test = OurDataset(X_test, y_test)
-    test_loader = DataLoader(our_dataset_test, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+    test_loader = DataLoader(our_dataset_test, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True, generator=generator)
 
     if create_val_loader:
         return scaler, train_loader, test_loader, val_loader
     else:
         return scaler, train_loader, test_loader
 
-def prepare_multivariate_data(series_list, nav, nap, train_size, test_size, batch_size, num_workers, create_val_loader=False, val_size=0, random_state=666, shuffle_split=True):
+def prepare_multivariate_data(series_list, nav, nap, train_size, test_size, batch_size, num_workers, create_val_loader=False, val_size=0, random_state=666, shuffle_split=True, seed_reproducibility=True):
     """
     Preprocesses multivariate time series data for training, testing, and optional validation.
 
@@ -181,6 +186,12 @@ def prepare_multivariate_data(series_list, nav, nap, train_size, test_size, batc
     train_loader = None
     val_loader = None
 
+    generator = torch.Generator()
+    if seed_reproducibility:
+        generator.manual_seed(0)
+    else:
+        generator.seed()
+
     if create_val_loader:
         # 4. Train/Validation Split
         X_train, X_val, y_train, y_val = sklearn.model_selection.train_test_split(
@@ -190,15 +201,15 @@ def prepare_multivariate_data(series_list, nav, nap, train_size, test_size, batc
 
         our_dataset_train = OurDataset(X_train, y_train)
         our_dataset_val = OurDataset(X_val, y_val)
-        train_loader = DataLoader(our_dataset_train, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
-        val_loader = DataLoader(our_dataset_val, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+        train_loader = DataLoader(our_dataset_train, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True, generator = generator)
+        val_loader = DataLoader(our_dataset_val, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True, generator = generator)
 
     else:
         our_dataset_train = OurDataset(X_train_full, y_train_full)
-        train_loader = DataLoader(our_dataset_train, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
+        train_loader = DataLoader(our_dataset_train, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True, generator = generator)
 
     our_dataset_test = OurDataset(X_test, y_test)
-    test_loader = DataLoader(our_dataset_test, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+    test_loader = DataLoader(our_dataset_test, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True, generator=generator)
 
     if create_val_loader:
         return list_of_scalers, train_loader, val_loader, test_loader

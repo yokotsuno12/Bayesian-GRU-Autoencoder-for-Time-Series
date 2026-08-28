@@ -18,16 +18,12 @@ class FusionBayesianEncoderRNN(torch.nn.Module):
       # TOTAL input if hot_encoding : [batch_size, length T, length T, dimensionality d]
       # TOTAL input if time_delay : [batch_size, length T - k, time delay k + 1, dimensionality d]
       # For the input of forward function of one GRU cell, suppress dimension 1 (resp. T and T - k)
-        #print("INPUT GRU", input.shape,"\n", "\n", "\n", input) = 50, k+1, num_var
         output, hidden = self.gru(input, hidden)
         return output, hidden
 
     def init_hidden(self,device):
         #[num_layers*num_directions,batch,hidden_size]
         return torch.zeros(self.num_grulstm_layers, self.batch_size, self.hidden_size, device=device)
-        #local_gener = torch.Generator(device=device)
-        #local_gener.manual_seed(1) # For reproducibility
-        #return torch.randn(self.num_grulstm_layers, self.batch_size, self.hidden_size, device=device, generator=local_gener, dtype=torch.float32)
 
 class FusionBayesianDecoderRNN(nn.Module):
     def __init__(self, input_size, hidden_size, num_grulstm_layers,fc_units, output_size):
@@ -47,7 +43,6 @@ class FusionBayesian_Net_GRU(nn.Module):
         super(FusionBayesian_Net_GRU, self).__init__()
         if fusion_style == 'early' and encoding_strategy_univar == 'hot_encoding' :
           print("Hot encoding is not recommended for early fusion of variables. It would be very heavy to compute.")
-          #raise ValueError("Hot encoding is deactivated for early fusion of variables. It would be too heavy to compute.")
         self.encoder = encoder
         self.decoder = decoder
         self.target_length = target_length
@@ -117,8 +112,6 @@ class FusionBayesian_Net_GRU(nn.Module):
         for ei in range(input_length):
             if self.encoding_strategy_univar != 'no strategy':
               encoder_input = x_bis[:,ei:ei+1,:,:]
-            #elif self.encoding_strategy_univar == 'time_delay_embedding':
-              #encoder_input = x[:,ei:ei+self.k,:] #Would this be more efficient ?
             else:
               encoder_input = x[:,ei:ei+1,:]
             if self.training:
@@ -137,10 +130,6 @@ class FusionBayesian_Net_GRU(nn.Module):
 
 
         decoder_input = x[:,-1,:].unsqueeze(1).to(torch.float32) # first decoder input= last element of input sequence
-      ##  if self.training and self.recurrent_dropout>0:
-        ##  encoder_hidden = encoder_hidden * mask_hidden
-       # if self.training and self.input_dropout>0:
-        #  decoder_input = decoder_input * mask_in
         decoder_hidden = encoder_hidden
 
         outputs = torch.zeros([batch_size, self.target_length, x.shape[2]]).to(self.device, non_blocking=True)
