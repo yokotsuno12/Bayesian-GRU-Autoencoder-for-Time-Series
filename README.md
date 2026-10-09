@@ -1,6 +1,7 @@
 # Bayesian GRU Autoencoders for Time Series
 ## Credits & References
 This project is based on the work of Vincent le Guen and Nicolas Thome on the DILATE loss function. Their code is published on the vincent-leguen/DILATE repository under GNU General Public License : The loss function and original GRU autoencoder architecture code belong to them. You can find their paper [here](https://arxiv.org/abs/1909.09020 "here").
+Special thanks to [Gwenaël](https://github.com/gwenael-j "gwenael-j") who took part in the first phase of this project, for his insights on Bayesian Inference, his original idea of pseudo-one-hot-encoding and his major contribution to the project documentation.
 
 
 ## DILATE
@@ -12,8 +13,8 @@ And there happens to be a function named DTW that computes not only a distance b
 2. Even for the comparison of two same-size sequences, SoftDTW can be sensitive to local (de)compression. This means that even if the shape is very well predicted, the spikes could be delayed in one way or the other. To penalize time shifts, they introduced a temporal distortion index (TDI).
 
 
-The DILATE function is the sum of these two functions, weighted by a parameter $\alpha \in [0, 1]$ : <br>
-$L_{DILATE} (y_{target}, y_{pred}) = \alpha\ SoftDTW_{\gamma}(y_{target}, y_{pred}) + (1-\alpha )\ TDI (y_{target}, y_{pred})$
+The DILATE function is the sum of these two functions, weighted by a parameter $\alpha \in [0, 1]$ :
+$$L_{DILATE} (y_{target}, y_{pred}) = \alpha\ SoftDTW_{\gamma}(y_{target}, y_{pred}) + (1-\alpha )\ TDI (y_{target}, y_{pred})$$
 
 The authored tested this loss function with a GRU Autoencoder (which was chosen for this demo) and a MLP. They compared it to the MSE loss function and found that "DILATE is comparable to the standard MSE loss when evaluated on MSE, and far better when evaluated on several shape and timing metrics."
 
@@ -21,7 +22,7 @@ Now in their conclusions, the authors mentioned the possibility of "[exploring] 
 
 
 
-## How to build a Bayesian GRU Autoencoder
+## Building a Bayesian GRU Autoencoder
 In 2016, Gal & Ghahramani [showed](https://arxiv.org/abs/1512.05287 "showed") that contrary to popular belief, it was possible to use Dropout in RNNs for Variational Inference, only on both conditions that :
 - Every weight in the model should be subverted to Dropout, including on the input level ;
 - For RNNs on a GRU-basis, the masks generated to drop the "input-weights" and the "hidden-weights" must remain constant throughout all the input sequence.
@@ -84,8 +85,8 @@ The models are pre-trained. If you want to re-train them, please change `num_epo
 During inference, the model executes $s=100$ forward passes with active variational dropout to sample the weight posterior, outputting both point predictions (reconstruction mean $\mu$) and continuous uncertainty bounds ($\pm 2\sigma$). The script will generate two plots showing the uncertainty of the MSE and DILATE trained models on the same input sample. 
 
 <p middle="center">
-  <img src=".monte_carlo_dropout_mse.png" alt="Confidence MSE" width="45%" />
-  <img src=".monte_carlo_dropout_dilate.png" alt="Confidence DILATE" width="45%" />
+  <img src=".monte_carlo_dropout_mse.png" alt="Confidence MSE" width="40%" />
+  <img src=".monte_carlo_dropout_dilate.png" alt="Confidence DILATE" width="40%" />
 </p>
 
 
